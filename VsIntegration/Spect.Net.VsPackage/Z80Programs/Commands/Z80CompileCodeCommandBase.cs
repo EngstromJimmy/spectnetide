@@ -1,16 +1,16 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Windows;
-using Microsoft.VisualStudio.Shell;
+﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Spect.Net.Assembler.Assembler;
 using Spect.Net.VsPackage.Commands;
 using Spect.Net.VsPackage.ProjectStructure;
 using Spect.Net.VsPackage.Vsx;
 using Spect.Net.VsPackage.Vsx.Output;
+using System;
+using System.IO;
+using System.Text;
+using System.Windows;
 using Task = System.Threading.Tasks.Task;
-using VsTask = Microsoft.VisualStudio.Shell.Task;
+using VsTask = Microsoft.VisualStudio.Shell.TaskListItem;
 // ReSharper disable SuspiciousTypeConversion.Global
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
 
@@ -26,8 +26,6 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
                                                       "contains invalid characters or an absolute path. Go to the Options dialog and " +
                                                       "fix the issue so that you can add the list file to the project.";
 
-
-
         /// <summary>
         /// The output of the compilation
         /// </summary>
@@ -42,7 +40,7 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
             {
                 if (Output == null) return -1;
                 if (Output.EntryAddress != null) return Output.EntryAddress.Value;
-                return Output.ExportEntryAddress 
+                return Output.ExportEntryAddress
                     ?? Output.Segments[0].StartAddress;
             }
         }
@@ -64,10 +62,10 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
         /// <summary>
         /// Gets the start address to use when running code
         /// </summary>
-        public int StartAddress => 
-            Output == null 
+        public int StartAddress =>
+            Output == null
                 ? -1
-                : Output.EntryAddress 
+                : Output.EntryAddress
                     ?? Output.Segments[0].StartAddress;
 
         /// <summary>
@@ -169,7 +167,7 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
             var runOptions = SpectNetPackage.Default.Options.RunSymbols;
             if (runOptions != null)
             {
-                var symbols = runOptions.Split(new [] {';'}, StringSplitOptions.RemoveEmptyEntries);
+                var symbols = runOptions.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var symbol in symbols)
                 {
                     if (!options.PredefinedSymbols.Contains(symbol))
@@ -362,7 +360,7 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
             template = template.Replace("{CX}", "");
             template = template.Replace("{S}", "");
             template += Environment.NewLine;
-            
+
             // --- Initialize the output loop
             var list = new StringBuilder(1024 * 1024);
             var currentFileIndex = -1;
@@ -382,7 +380,7 @@ namespace Spect.Net.VsPackage.Z80Programs.Commands
             foreach (var outItem in Output.ListFileItems)
             {
                 // --- Check file header
-                if (options.ListFileOutputMode == ListFileOutputMode.Header 
+                if (options.ListFileOutputMode == ListFileOutputMode.Header
                     && outItem.FileIndex != currentFileIndex)
                 {
                     list.AppendLine();
